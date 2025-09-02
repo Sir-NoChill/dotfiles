@@ -1,0 +1,65 @@
+[alias]
+	alias = "config --get-regexp ^alias"
+	amend = "commit --amend"
+	br = "branch"
+	c = "commit"
+	clean = "clean -fd"
+	clonepr = "!f() { git fetch origin pull/$1/head:pr-$1 && git checkout pr-$1; }; f"
+	co = "checkout"
+	diffstat = "diff --stat"
+	fixup = "commit --fixup"
+	lg = "log --oneline --graph --decorate --all"
+	logdiff = "log -p"
+	ls = "ls-files"
+	remotes = "remote -v"
+	squash = "!f() { git rebase -i HEAD~$1; }; f"
+	st = "status"
+	undo = "reset --soft HEAD~1"
+	unstage = "restore --staged"
+	wip = "commit -m 'WIP'"
+
+[color]
+	ui = "auto"
+
+[commit]
+	gpgSign = false
+	gpgsign = true
+
+[core]
+	autocrlf = "input"
+	editor = "nvim"
+
+[credential]
+	helper = "cache --timeout=3600"
+
+[diff]
+	submodule = "log"
+
+[filter "lfs"]
+	clean = "git-lfs clean -- %f"
+	process = "git-lfs filter-process"
+	required = true
+	smudge = "git-lfs smudge -- %f"
+
+[gpg]
+	program = "/nix/store/3z0lkq6lsjlsdnc3drlxph91c6jvh36d-gnupg-2.4.5/bin/gpg2"
+
+[init]
+	defaultBranch = "main"
+
+[merge]
+	ff = "only"
+
+[pull]
+	rebase = "true"
+
+[push]
+	default = "simple"
+
+[tag]
+	gpgSign = false
+
+[user]
+	email = "git@blobfish.icu"
+	name = "Ayrton Chilibeck"
+	signingKey = "D0B5159D190F9DF6263F4B829AF4F722FD1DA137"
