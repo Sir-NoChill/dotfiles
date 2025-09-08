@@ -1,4 +1,4 @@
-j- ~/.config/nvim/lua/plugins/lsp/init.lua
+-- ~/.config/nvim/lua/plugins/lsp/init.lua
 return {
   "neovim/nvim-lspconfig",
   event = "LazyFile",
