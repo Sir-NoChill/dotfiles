@@ -10,7 +10,7 @@ return {
         light = "latte",
         dark = "mocha",
       },
-      transparent_background = false,
+      transparent_background = true,
       show_end_of_buffer = false,
       term_colors = false,
       dim_inactive = {
@@ -49,7 +49,6 @@ return {
         which_key = true,
         indent_blankline = {
           enabled = true,
-          colored_indent_levels = false,
         },
         native_lsp = {
           enabled = true,

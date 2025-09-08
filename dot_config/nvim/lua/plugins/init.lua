@@ -7,9 +7,10 @@ return {
     "nvim-lua/plenary.nvim", -- Lua functions library
     lazy = false,
   },
-  
+
   -- Load all other plugin configurations
-  require("plugins.colorscheme"),
+  require("plugins.theming.colorscheme"),
+  require("plugins.theming.indent-blankline"),
   require("plugins.lualine"),
   require("plugins.treesitter"),
   require("plugins.lsp"),
