@@ -41,9 +41,6 @@
 	required = true
 	smudge = "git-lfs smudge -- %f"
 
-[gpg]
-	program = "/nix/store/3z0lkq6lsjlsdnc3drlxph91c6jvh36d-gnupg-2.4.5/bin/gpg2"
-
 [init]
 	defaultBranch = "main"
 
@@ -62,4 +59,3 @@
 [user]
 	email = "git@blobfish.icu"
 	name = "Ayrton Chilibeck"
-	signingKey = "D0B5159D190F9DF6263F4B829AF4F722FD1DA137"
