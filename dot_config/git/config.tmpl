@@ -52,10 +52,11 @@
 
 [push]
 	default = "simple"
+  autoSetupRemote = "true"
 
 [tag]
 	gpgSign = false
-
 [user]
 	email = "git@blobfish.icu"
 	name = "Ayrton Chilibeck"
+  signingKey = {{ (fromYaml (include ".machine_config.yml")).git.signingKey }}

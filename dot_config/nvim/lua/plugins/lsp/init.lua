@@ -1,7 +1,6 @@
 -- ~/.config/nvim/lua/plugins/lsp/init.lua
 return {
   "neovim/nvim-lspconfig",
-  event = "LazyFile",
   dependencies = {
     "mason-org/mason.nvim",
     { "mason-org/mason-lspconfig.nvim", config = function() end },
@@ -24,15 +23,15 @@ return {
           -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
           -- prefix = "icons",
         },
-        severity_sort = true,
-        signs = {
-          text = {
-            [vim.diagnostic.severity.ERROR] = LazyVim.config.icons.diagnostics.Error,
-            [vim.diagnostic.severity.WARN] = LazyVim.config.icons.diagnostics.Warn,
-            [vim.diagnostic.severity.HINT] = LazyVim.config.icons.diagnostics.Hint,
-            [vim.diagnostic.severity.INFO] = LazyVim.config.icons.diagnostics.Info,
-          },
-        },
+        -- severity_sort = true,
+        -- signs = {
+        --   text = {
+        --     [vim.diagnostic.severity.ERROR] = LazyVim.config.icons.diagnostics.Error,
+        --     [vim.diagnostic.severity.WARN] = LazyVim.config.icons.diagnostics.Warn,
+        --     [vim.diagnostic.severity.HINT] = LazyVim.config.icons.diagnostics.Hint,
+        --     [vim.diagnostic.severity.INFO] = LazyVim.config.icons.diagnostics.Info,
+        --   },
+        -- },
       },
       -- Enable this to enable the builtin LSP inlay hints on Neovim >= 0.10.0
       -- Be aware that you also will need to properly configure your LSP server to
@@ -176,15 +175,15 @@ return {
     })
 
     -- setup autoformat
-    LazyVim.format.register(LazyVim.lsp.formatter())
+    -- LazyVim.format.register(LazyVim.lsp.formatter())
 
     -- setup keymaps
-    LazyVim.lsp.on_attach(function(client, buffer)
-      require("lazyvim.plugins.lsp.keymaps").on_attach(client, buffer)
-    end)
+    -- LazyVim.lsp.on_attach(function(client, buffer)
+    --   require("lazyvim.plugins.lsp.keymaps").on_attach(client, buffer)
+    -- end)
 
-    LazyVim.lsp.setup()
-    LazyVim.lsp.on_dynamic_capability(require("lazyvim.plugins.lsp.keymaps").on_attach)
+    -- LazyVim.lsp.setup()
+    -- LazyVim.lsp.on_dynamic_capability(require("lazyvim.plugins.lsp.keymaps").on_attach)
 
     -- diagnostics signs
     if vim.fn.has("nvim-0.10.0") == 0 then
@@ -199,41 +198,41 @@ return {
 
     if vim.fn.has("nvim-0.10") == 1 then
       -- inlay hints
-      if opts.inlay_hints.enabled then
-        LazyVim.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
-          if
-            vim.api.nvim_buf_is_valid(buffer)
-            and vim.bo[buffer].buftype == ""
-            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
-          then
-            vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
-          end
-        end)
-      end
+      -- if opts.inlay_hints.enabled then
+      --   LazyVim.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
+      --     if
+      --       vim.api.nvim_buf_is_valid(buffer)
+      --       and vim.bo[buffer].buftype == ""
+      --       and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
+      --     then
+      --       vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
+      --     end
+      --   end)
+      -- end
 
       -- code lens
-      if opts.codelens.enabled and vim.lsp.codelens then
-        LazyVim.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
-          vim.lsp.codelens.refresh()
-          vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-            buffer = buffer,
-            callback = vim.lsp.codelens.refresh,
-          })
-        end)
-      end
+      -- if opts.codelens.enabled and vim.lsp.codelens then
+      --   LazyVim.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
+      --     vim.lsp.codelens.refresh()
+      --     vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+      --       buffer = buffer,
+      --       callback = vim.lsp.codelens.refresh,
+      --     })
+      --   end)
+      -- end
     end
 
-    if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
-      opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
-        or function(diagnostic)
-          local icons = LazyVim.config.icons.diagnostics
-          for d, icon in pairs(icons) do
-            if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
-              return icon
-            end
-          end
-        end
-    end
+    -- if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
+    --   opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
+    --     or function(diagnostic)
+    --       local icons = LazyVim.config.icons.diagnostics
+    --       for d, icon in pairs(icons) do
+    --         if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
+    --           return icon
+    --         end
+    --       end
+    --     end
+    -- end
 
     vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
@@ -272,9 +271,9 @@ return {
     -- get all the servers that are available through mason-lspconfig
     local have_mason, mlsp = pcall(require, "mason-lspconfig")
     local all_mslp_servers = {}
-    if have_mason then
-      all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
-    end
+    -- if have_mason then
+    --   all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
+    -- end
 
     local ensure_installed = {} ---@type string[]
     for server, server_opts in pairs(servers) do
@@ -291,27 +290,27 @@ return {
       end
     end
 
-    if have_mason then
-      mlsp.setup({
-        ensure_installed = vim.tbl_deep_extend(
-          "force",
-          ensure_installed,
-          LazyVim.opts("mason-lspconfig.nvim").ensure_installed or {}
-        ),
-        handlers = { setup },
-      })
-    end
+    -- if have_mason then
+    --   mlsp.setup({
+    --     ensure_installed = vim.tbl_deep_extend(
+    --       "force",
+    --       ensure_installed
+    --       LazyVim.opts("mason-lspconfig.nvim").ensure_installed or {}
+    --     ),
+    --     handlers = { setup },
+    --   })
+    -- end
 
-    if LazyVim.lsp.is_enabled("denols") and LazyVim.lsp.is_enabled("vtsls") then
-      local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-      LazyVim.lsp.disable("vtsls", is_deno)
-      LazyVim.lsp.disable("denols", function(root_dir, config)
-        if not is_deno(root_dir) then
-          config.settings.deno.enable = false
-        end
-        return false
-      end)
-    end
+    -- if LazyVim.lsp.is_enabled("denols") and LazyVim.lsp.is_enabled("vtsls") then
+    --   local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+    --   LazyVim.lsp.disable("vtsls", is_deno)
+    --   LazyVim.lsp.disable("denols", function(root_dir, config)
+    --     if not is_deno(root_dir) then
+    --       config.settings.deno.enable = false
+    --     end
+    --     return false
+    --   end)
+    -- end
 
     -- Change the Diagnostic symbols in the sign column (gutter)
     local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }

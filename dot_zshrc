@@ -102,7 +102,7 @@ if [[ -n $SSH_CONNECTION ]]; then
   if [[ -f $(which nvim) ]]; then
     export EDITOR='vim'
   else
-    export EDITOR='nvim' 
+    export EDITOR='nvim'
   fi
   export TERM='vt100'
 else
