@@ -8,6 +8,10 @@ local function map(mode, lhs, rhs, opts)
   vim.keymap.set(mode, lhs, rhs, options)
 end
 
+-- LSP keymaps
+map("n", "<leader>j", "<cmd>lua vim.diagnostic.goto_next()<CR>")
+map("n", "<leader>k", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
+
 -- Remap ; to :
 map("n", ";", "<cmd>")
 
