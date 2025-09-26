@@ -14,6 +14,7 @@ return {
   require("plugins.lualine"),
   require("plugins.treesitter"),
   require("plugins.lsp"),
+  require("plugins.dap"),
   require("plugins.cmp"),
   require("plugins.telescope"),
   require("plugins.nvim-tree"),
