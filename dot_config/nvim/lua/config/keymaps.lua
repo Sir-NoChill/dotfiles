@@ -13,7 +13,7 @@ map("n", "<leader>j", "<cmd>lua vim.diagnostic.goto_next()<CR>")
 map("n", "<leader>k", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
 
 -- Remap ; to :
-map("n", ";", "<cmd>")
+map("n", ";", ":")
 
 -- Clear search highlighting
 map("n", "<Esc>", "<cmd>nohlsearch<CR>")
