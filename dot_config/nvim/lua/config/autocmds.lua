@@ -107,3 +107,11 @@ autocmd("TermOpen", {
     vim.cmd("startinsert")
   end,
 })
+
+-- Lazy update
+autocmd("VimEnter", {
+  group = general,
+  callback = function()
+    require("lazy").update()
+  end,
+})
