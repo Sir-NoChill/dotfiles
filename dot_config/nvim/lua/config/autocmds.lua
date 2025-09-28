@@ -108,10 +108,8 @@ autocmd("TermOpen", {
   end,
 })
 
--- Lazy update
 autocmd("VimEnter", {
-  group = general,
   callback = function()
-    require("lazy").update()
+    vim.cmd("NoNeckPain")
   end,
 })
