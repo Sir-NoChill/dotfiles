@@ -1,0 +1,14 @@
+[window]
+opacity = 0.8
+
+decorations = "Full"
+decorations_theme_variant = "Dark"
+
+[font]
+
+normal.family = "JetBrainsMono Nerd Font Propo"
+bold.family = "JetBrainsMono Nerd Font Propo"
+italic.family = "JetBrainsMono Nerd Font Propo"
+bold_italic.family = "JetBrainsMono Nerd Font Propo"
+
+size = 11.0
