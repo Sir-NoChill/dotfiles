@@ -1,7 +1,7 @@
 arch = [
   "act",  # Run GH Actions from the CLI!
   "alsa-utils",  # ALSA sound support
-  "anytype-bin",  # Notion, but local, but secured, but german
+  "anytype-appimage",  # Notion, but local, but secured, but german
   "archlinux-themes-sddm", # login screen theme
   "arm-none-eabi-gdb",  # ARM debugger
   "audiorelay",  # stream audio from one device to another
@@ -61,7 +61,6 @@ arch = [
   "otf-overpass-nerd",
   "parallel",  # run multiple commands in parallel
   "paru",  # AUR helper
-  "paru-debug",  # AUR helper
   "pdftk",  # all the pdf utils
   "piper-tts-bin",  # text to speech
   "piper-voices-common",
