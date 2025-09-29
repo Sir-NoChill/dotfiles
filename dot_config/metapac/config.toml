@@ -1,0 +1,37 @@
+# dependent on the operating system as specified in the `dirs` crate:
+# | Platform | Value                                                 |
+# | -------- | ----------------------------------------------------- |
+# | Linux    | $XDG_CONFIG_HOME or $HOME/.config/metapac/config.toml |
+# | macOS    | $HOME/Library/Application Support/metapac/config.toml |
+# | Windows  | {FOLDERID_RoamingAppData}\metapac\config.toml         |
+
+# Backends to enable for most of metapac's behavior. See the README.md or
+# run `metapac backends` for the list of backend names
+# Default: []
+enabled_backends = ["arch"]
+
+# Whether to use the [hostname_groups] config table to decide which
+# group files to use or to use all files in the groups folder.
+# Default: false
+hostname_groups_enabled = true
+
+# Which group files apply for which hostnames
+# paths starting without a / are relative to the groups folder
+# Default: None
+[hostname_groups]
+pc = ["midas", "all"]
+cephid = ["laptop", "all"]
+server = ["kholin", "all"]
+
+[arch]
+# Since pacman, pamac, paru, pikaur and yay all operate on the same package
+# database they are mutually exclusive and so you must pick which one you want
+# metapac to use.
+# Must be one of: ["pacman", "pamac", "paru", "pikaur", "yay"]
+# Default: "pacman"
+package_manager = "paru"
+
+[cargo]
+# Whether to default to installing cargo packages with the --locked option.
+# Default: false
+locked = true
