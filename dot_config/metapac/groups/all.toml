@@ -1,56 +1,53 @@
 arch = [
-  "act",
-  "alsa-utils",
-  "anytype-bin",
-  "arandr",
-  "archlinux-themes-sddm",
-  "arm-none-eabi-gdb",
-  "audiorelay",
-  "base",
-  "base-devel",
-  "borg",
-  "btop",
-  "chezmoi",
-  "claude-code",
-  "codelldb-bin",
-  "cronie",
-  "direnv",
-  "docker",
-  "dungeondraft",
-  "firefox",
-  "fuse2",
-  "ghostty",
-  "git",
-  "github-cli",
-  "go",
-  "graphicsmagick",
-  "graphviz",
-  "gwakeonlan",
-  "hyprland",
-  "hyprlock",
-  "hyprsunset",
-  "imagemagick",
-  "inkscape",
-  "jujutsu",
-  "just",
-  "kew",
-  "kitty",
-  "libheif",
-  "libreoffice-fresh",
-  "linux",
-  "linux-firmware",
-  "metapac",
-  "minecraft-launcher",
-  "minicom",
-  "mpd",
-  "ncmpcpp",
-  "neovim",
-  "networkmanager",
-  "networkmanager-openconnect",
-  "networkmanager-openvpn",
-  "npm",
-  "openssh",
-  "otf-aurulent-nerd",
+  "act",  # Run GH Actions from the CLI!
+  "alsa-utils",  # ALSA sound support
+  "anytype-bin",  # Notion, but local, but secured, but german
+  "archlinux-themes-sddm", # login screen theme
+  "arm-none-eabi-gdb",  # ARM debugger
+  "audiorelay",  # stream audio from one device to another
+  "base",  # base packages
+  "base-devel",  # base development packages
+  "borg",  # deduplicating backup tool
+  "btop",  # top, but cooler (htop), but sleeker
+  "chezmoi",  # dotfiles manager
+  "claude-code",  # I literally have all the contempt for myself and deserve death
+  "codelldb-bin",  # lldb for dap debugging
+  "cronie",  # cron
+  "direnv",  # environment manager
+  "docker",  # containerize everything
+  "dungeondraft",  # Dungeon Crawl Stone Soup
+  "firefox",  # web browser
+  "fuse2",  # Interface for userspace programs to export a filesystem to the Linux kernel
+  "ghostty",  # terminal, but better (and written in zig!!)
+  "git",  # git
+  "github-cli",  # I hate microsoft, one day I will delete this
+  "go",  # golang, damn it google, don't design by committee again
+  "graphicsmagick",  # Image magick, but better
+  "graphviz",  # dot my love...
+  "gwakeonlan",  # wake on lan
+  "hyprland",  # sleek, tiling, wayland compositor (did i mention it's sleek?)
+  "hyprlock",  # lock screen for the sleekest of compositors
+  "hyprsunset",  # sleep timer for the sleekest of compositors
+  "imagemagick",  # need this for graphicsmagick
+  "inkscape",  # svg editor
+  "jujutsu",  # git, but... sleeker
+  "just",  # command runner, very nice
+  "kew",  # terminal audio player
+  "libheif",  # compression (HEIF) support
+  "libreoffice-fresh",  # office suite
+  "linux",  # kernel
+  "linux-firmware",  # firmware
+  "metapac",  # metapackage manager
+  "minecraft-launcher",  # minecraft launcher
+  "minicom",  # serial terminal
+  "mpd",  # music player daemon
+  "ncmpcpp",  # music player client
+  "networkmanager",  # network manager
+  "networkmanager-openconnect",  # network manager openconnect plugin
+  "networkmanager-openvpn",  # network manager openvpn plugin
+  "npm",  # node package manager, death to javascript
+  "openssh",  # ssh
+  "otf-aurulent-nerd",  # nerd fonts......
   "otf-codenewroman-nerd",
   "otf-comicshanns-nerd",
   "otf-commit-mono-nerd",
@@ -62,30 +59,29 @@ arch = [
   "otf-monaspace-nerd",
   "otf-opendyslexic-nerd",
   "otf-overpass-nerd",
-  "parallel",
-  "paru",
-  "paru-debug",
-  "pdftk",
-  "pellets",
-  "piper-tts-bin",
+  "parallel",  # run multiple commands in parallel
+  "paru",  # AUR helper
+  "paru-debug",  # AUR helper
+  "pdftk",  # all the pdf utils
+  "piper-tts-bin",  # text to speech
   "piper-voices-common",
   "piper-voices-en-us",
-  "pipewire-alsa",
+  "pipewire-alsa",  # audio stuff for pipewire
   "pipewire-docs",
   "pipewire-pulse",
-  "qgis",
-  "qt5-declarative",
-  "refind",
-  "scons",
-  "sddm-git",
-  "sof-firmware",
-  "speech-dispatcher",
-  "steam",
-  "steamtinkerlaunch",
-  "sudo",
-  "thunar",
-  "thunderbird",
-  "ttf-0xproto-nerd",
+  "qgis",  # GIS
+  "qt5-declarative",  # what a cute framework
+  "refind",  # EFI boot manager, it's quite nice
+  "scons",  # a bad build system for fools
+  "sddm-git",  # login manager
+  "sof-firmware",  # firmware
+  "speech-dispatcher",  # text to speech
+  "steam",  # hmmm. should I remove this? Just one more hour I swear....
+  "steamtinkerlaunch",  # steam mod launcher
+  "sudo",  # I AM GOD
+  "thunar",  # file manager
+  "thunderbird",  # email
+  "ttf-0xproto-nerd",  # nerd fonts
   "ttf-3270-nerd",
   "ttf-agave-nerd",
   "ttf-anonymouspro-nerd",
@@ -140,16 +136,16 @@ arch = [
   "ttf-ubuntu-nerd",
   "ttf-victor-mono-nerd",
   "ttf-zed-mono-nerd",
-  "uwsm",
-  "vi",
-  "vim",
-  "waybar",
-  "wofi",
-  "xdg-desktop-portal",
-  "xdg-desktop-portal-hyprland",
-  "yay-debug",
-  "zip",
-  "zoom",
-  "zotero-bin",
-  "zsh",
+  "uwsm",  # window manager for the sleekest of the sleekest sleekers
+  "vi",  # and God said, "let there be vi"
+  "vim",  # then he said, "I can do better"
+  "neovim",  # and jesus said, "Old man, you just watch"
+  "waybar",  # status bar for the sleeeekest sleekiest slkeeeker sklkslkdfjfs
+  "wofi",  # application launcher for the sleekskeelk skleekeeeek sdjkjflsjljahhdigishdfsh
+  "xdg-desktop-portal",  # desktop integration
+  "xdg-desktop-portal-hyprland",  # desktop integration for slk folks
+  "zip",  # gotta   c o m p r e s s    (except it's windows ugh)
+  "zoom",  # I know you're watching Xi. I know you're watching....
+  "zotero-bin",  # bibliographies for awesome researchers :)
+  "zsh",  # my favorite sh
 ]
