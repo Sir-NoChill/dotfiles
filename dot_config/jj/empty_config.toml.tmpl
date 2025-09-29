@@ -1,0 +1,56 @@
+#:schema https://jj-vcs.github.io/jj/latest/config-schema.json
+
+[user]
+name = "Ayrton Chilibeck"
+email = "git@blobfish.icu"
+
+[ui]
+# Use colors by default (auto = use when stdout is a terminal)
+color = "auto"
+# Prefer git‐style diff output (more familiar)
+diff.format = "git"
+
+[editor]
+# Use your preferred editor, e.g. nvim
+cmd = "nvim"
+
+[snapshot]
+# By default, auto‐track changes in working copy.
+# You might prefer “none()” if you want manual file tracking.
+auto-track = "glob:**/*"
+
+[git]
+# For interop with Git remotes: when you push back to Git, write a Change-Id header
+write-change-id-header = true
+
+[signing]
+# Use GPG by default for commit signing
+gpg.sign = true
+# The key id (replace with your actual key)
+gpg.key = "{{ (fromYaml (include ".machine_config.yml")).git.signingKey }}"
+
+[aliases]
+# Some useful aliases in jj’s style
+rebase-all = ["rebase", "-s", "all:roots(trunk()..mutable())", "-d", "trunk()"]
+tug = ["bookmark", "move", "--from", "heads(::@- & bookmarks())", "--to", "@-"]
+fresh = ["new", "trunk()"]
+dlog = ["log", "-r"]
+l = ["log", "-r", "(trunk()..@):: | (trunk()..@)-"]
+
+[revset-aliases]
+# Define some handy revset aliases for easier querying
+"closest_bookmark(to)" = "heads(::to & bookmarks())"
+"closest_pushable(to)" = "heads(::to & mutable() & ~description(exact:\"\") & (~empty() | merges()))"
+"desc(x)" = "description(x)"
+"pending()" = ".. ~ ::tags() ~ ::remote_bookmarks() ~ @ ~ private()"
+"private()" = "description(glob:'wip:*') | description(glob:'private:*') | description(glob:'WIP:*') | description(glob:'PRIVATE:*') | conflicts() | (empty() ~ merges()) | description('substring-i:\"DO NOT MAIL\"')"
+
+[colors]
+# Optionally override some diff token colors if you like
+"diff removed token" = { fg = "bright red", underline = false }
+"diff added token" = { fg = "bright green", underline = false }
+
+[ui.movement]
+# Some users prefer that “--edit” is implied when moving
+edit = true
+
