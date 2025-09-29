@@ -19,7 +19,7 @@
         "mpd",
         "idle_inhibitor",
         // "pulseaudio",
-	"wireplumber",
+	      "wireplumber",
         "network",
         "power-profiles-daemon",
         "cpu",
@@ -191,10 +191,10 @@
         "format-alt": "{ifname}: {ipaddr}/{cidr}"
     },
     "wireplumber": {
-	"format": "{volume}% {icon}",
+	    "format": "{volume}% {icon}",
     	"format-muted": "",
     	"on-click": "helvum",
-    	"format-icons": ["", "", ""]
+    	"format-icons": ["-", "<", "#"]
     },
     // "pulseaudio": {
     //     // "scroll-step": 1, // %, can be a float
