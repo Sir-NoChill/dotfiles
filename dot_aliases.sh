@@ -8,3 +8,6 @@ venv() {
 }
 
 alias moi="chezmoi apply"
+alias j="just"
+alias jr="just run"
+alias jd="just debug"
