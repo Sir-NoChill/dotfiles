@@ -8,6 +8,14 @@ return {
     "j-hui/fidget.nvim", -- LSP status updates
   },
   opts = function()
+    vim.filetype.add({ extension = {
+      hip = "cpp",
+      hpp = "cpp",
+      h = "cpp",
+      hxx = "cpp",
+      cu = "cpp",
+      cuh = "cpp",
+    }})
     ---@class PluginLspOpts
     local ret = {
       -- options for vim.diagnostic.config()
