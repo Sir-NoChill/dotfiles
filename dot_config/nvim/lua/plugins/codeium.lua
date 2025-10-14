@@ -9,14 +9,17 @@ return {
   config = function()
     require("codeium").setup({
         enable_cmp_source = false,
+        -- A mapping of filetype to true or false, to enable virtual text.
+        filetypes = {
+          md = false,
+          txt = false,
+          org = false,
+          typ = false,
+        },
         virtual_text = {
             enabled = true,
             -- Set to true if you never want completions to be shown automatically.
             manual = false,
-            -- A mapping of filetype to true or false, to enable virtual text.
-            filetypes = {
-              ["md"] = false,
-            },
             -- Whether to enable virtual text of not for filetypes not specifically listed above.
             default_filetype_enabled = true,
             -- How long to wait (in ms) before requesting completions after typing stops.
@@ -35,9 +38,9 @@ return {
                 -- Accept the current completion.
                 accept = "<C-a>",
                 -- Accept the next word.
-                accept_word = false,
+                accept_word = "<C-w>",
                 -- Accept the next line.
-                accept_line = false,
+                accept_line = "<C-l>",
                 -- Clear the virtual text.
                 clear = false,
                 -- Cycle to the next completion.
@@ -47,5 +50,6 @@ return {
             }
         }
     })
+
   end
 }
