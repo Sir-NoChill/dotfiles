@@ -36,7 +36,7 @@ return {
           return vim.startswith(name, ".")
         end,
         is_always_hidden = function(name, bufnr)
-          return false
+          return vim.startswith(name, "..")
         end,
       },
       float = {
