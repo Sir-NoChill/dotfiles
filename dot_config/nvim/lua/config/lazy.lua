@@ -28,4 +28,8 @@ require("lazy").setup({
     notify = true,
     frequency = 24 * 60 * 60, -- check for updates daily
   }, -- automatically check for plugin updates
+  dev = {
+    path = "~/Code",
+    fallback = false,
+  }
 })

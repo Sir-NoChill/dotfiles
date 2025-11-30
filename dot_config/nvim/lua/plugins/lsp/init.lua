@@ -6,6 +6,7 @@ return {
     { "mason-org/mason-lspconfig.nvim", config = function() end },
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     "j-hui/fidget.nvim", -- LSP status updates
+    "veryl-lang/veryl.vim",
   },
   opts = function()
     vim.filetype.add({ extension = {

@@ -1,5 +1,4 @@
--- Markdown snippets for LuaSnip
--- Place this file in: ~/.config/nvim/LuaSnip/markdown.lua
+-- Markdown snippets for LuaSnip Place this file in: ~/.config/nvim/LuaSnip/markdown.lua
 -- or wherever your LuaSnip snippets directory is configured
 
 local ls = require("luasnip")
