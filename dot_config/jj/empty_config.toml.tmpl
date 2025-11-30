@@ -8,7 +8,8 @@ email = "git@blobfish.icu"
 # Use colors by default (auto = use when stdout is a terminal)
 color = "auto"
 # Prefer git‐style diff output (more familiar)
-diff.format = "git"
+diff-formatter = ":git"
+pager = "bat"
 
 [editor]
 # Use your preferred editor, e.g. nvim
@@ -22,12 +23,14 @@ auto-track = "glob:**/*"
 [git]
 # For interop with Git remotes: when you push back to Git, write a Change-Id header
 write-change-id-header = true
+sign-on-push = true
 
 [signing]
 # Use GPG by default for commit signing
-gpg.sign = true
+behaviour = "own"
+backend = "gpg"
 # The key id (replace with your actual key)
-gpg.key = "{{ (fromYaml (include ".machine_config.yml")).git.signingKey }}"
+key = "{{ (fromYaml (include ".machine_config.yml")).git.signingKey }}"
 
 [aliases]
 # Some useful aliases in jj’s style
