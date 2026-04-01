@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# chezmoi: run_onchange_install-difft.sh
+# chezmoi: run_once_install-difft.sh
 # Installs the `difft` binary from the difftastic GitHub release,
 # falling back to pacman on Arch Linux.  Runs whenever this file changes.
 

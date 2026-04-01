@@ -68,3 +68,7 @@ map("t", "<C-h>", "<C-\\><C-N><C-w>h")
 map("t", "<C-j>", "<C-\\><C-N><C-w>j")
 map("t", "<C-k>", "<C-\\><C-N><C-w>k")
 map("t", "<C-l>", "<C-\\><C-N><C-w>l")
+
+map("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+map("n", "<leader>-", require("oil").toggle_float, {
+  desc = "Open Oil in floating window" })
