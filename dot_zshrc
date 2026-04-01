@@ -126,6 +126,7 @@ fi
 # - $ZSH_CUSTOM/macos.zsh
 # For a full list of active aliases, run `alias`.
 source "$HOME/.aliases.sh"
+source "$HOME/.diary/diary.sh"
 #
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
