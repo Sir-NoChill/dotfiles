@@ -88,6 +88,26 @@ rotate_note() {
         -e "s/HH:MM/$current_time/" \
         "$today_file"
 
+    # Propagate unchecked todos from the archived note into the new one.
+    if [[ -f "$archive_file" ]]; then
+        local unchecked
+        unchecked="$(grep -E '^\s*- \[ \]' "$archive_file")"
+        if [[ -n "$unchecked" ]]; then
+            # Replace the placeholder todo block in the template with the
+            # carried-over items. The template's TODOs section looks like:
+            #   ## TODOs\n\n- [ ]\n- [ ]\n- [ ]\n
+            # We replace those placeholder lines with the real unchecked ones.
+            export UNCHECKED="$unchecked"
+            perl -i -0pe '
+                s{(## TODOs\n)\n(?:[ \t]*- \[ \]\n)+}{$1\n$ENV{UNCHECKED}\n}
+            ' "$today_file"
+            unset UNCHECKED
+            local count
+            count="$(grep -c '' <<< "$unchecked")"
+            echo "Carried over $count unchecked todo(s)."
+        fi
+    fi
+
     echo "Created new note from template."
 }
 
