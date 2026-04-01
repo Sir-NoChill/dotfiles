@@ -8,7 +8,7 @@ email = "git@blobfish.icu"
 # Use colors by default (auto = use when stdout is a terminal)
 color = "auto"
 # Prefer git‐style diff output (more familiar)
-diff-formatter = ":git"
+diff-formatter = "difft"
 pager = "bat"
 
 [editor]
@@ -39,6 +39,7 @@ tug = ["bookmark", "move", "--from", "heads(::@- & bookmarks())", "--to", "@-"]
 fresh = ["new", "trunk()"]
 dlog = ["log", "-r"]
 l = ["log", "-r", "(trunk()..@):: | (trunk()..@)-"]
+stash = ["new", "--rev", "@-"]
 
 [revset-aliases]
 # Define some handy revset aliases for easier querying
@@ -56,4 +57,8 @@ l = ["log", "-r", "(trunk()..@):: | (trunk()..@)-"]
 [ui.movement]
 # Some users prefer that “--edit” is implied when moving
 edit = true
+
+[remotes]
+main.auto-track-bookmarks = "{{ (fromYaml (include ".machine_config.yml")).user.name }}/*"
+master.auto-track-bookmarks = "{{ (fromYaml (include ".machine_config.yml")).user.name }}/*"
 

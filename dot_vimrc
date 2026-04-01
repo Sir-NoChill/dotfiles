@@ -300,6 +300,8 @@ endfun
 
 if has("autocmd")
     autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+    autocmd FileType markdown,text setlocal textwidth=80
+    autocmd FileType markdown,text setlocal formatoptions+=t
 endif
 
 
