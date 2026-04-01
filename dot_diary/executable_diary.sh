@@ -78,6 +78,16 @@ rotate_note() {
         echo "Error: could not copy template to '$today_file'." >&2
         exit 1
     }
+
+    # Stamp the real date/week/time into the freshly created note.
+    local current_time
+    current_time="$(date +%H:%M)"
+    sed -i \
+        -e "s/YYYY-MM-DD/$CURRENT_DATE/g" \
+        -e "s/WW/$(date +%V)/" \
+        -e "s/HH:MM/$current_time/" \
+        "$today_file"
+
     echo "Created new note from template."
 }
 
