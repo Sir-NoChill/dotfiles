@@ -2,6 +2,6 @@
 .claude
 justfile
 .env
-.dotenv/
+.direnv/
 compile_commands.json
 .cache/
