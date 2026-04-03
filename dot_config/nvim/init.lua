@@ -72,3 +72,4 @@ end
 
 -- Load the core config
 require("config")
+require("lsp")
