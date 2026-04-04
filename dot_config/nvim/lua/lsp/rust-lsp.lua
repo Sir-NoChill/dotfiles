@@ -1,4 +1,4 @@
--- ~/.config/nvim/lua/lsp/clangd.lua
+-- ~/.config/nvim/lua/lsp/rust-lsp.lua
 vim.lsp.config['rust-analyzer'] = {
   -- Command and arguments to start the server.
   cmd = { 'rust-analyzer' },

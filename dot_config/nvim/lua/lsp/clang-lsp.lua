@@ -3,7 +3,7 @@ vim.lsp.config['clangd'] = {
   -- Command and arguments to start the server.
   cmd = { 'clangd' },
   -- Filetypes to automatically attach to.
-  filetypes = { 'cpp' },
+  filetypes = { 'cpp', 'c', 'cc', 'h', 'hh', 'hpp', 'inc' },
   -- Sets the "workspace" to the directory where any of these files is found.
   -- Files that share a root directory will reuse the LSP server connection.
   -- Nested lists indicate equal priority, see |vim.lsp.Config|.
@@ -16,5 +16,3 @@ vim.lsp.config['clangd'] = {
 -- Use vim.lsp.enable() to enable the config. Example:
 
 vim.lsp.enable('clangd')
-
-
