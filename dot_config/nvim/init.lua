@@ -10,6 +10,7 @@ local hooks = function(ev)
     -- Append `:wait()` if you need synchronous execution
     vim.system({ 'make' }, { cwd = ev.data.path })
   end
+
   -- If action relies on code from the plugin (like user command or
   -- Lua code), make sure to explicitly load it first
   -- if name == 'plug-2' and kind == 'update' then
@@ -34,7 +35,15 @@ local plugins = {
   "NeogitOrg/neogit",
   "shortcuts/no-neck-pain.nvim",
   "windwp/nvim-autopairs",
+  -- CMP
   "hrsh7th/nvim-cmp",
+  "hrsh7th/cmp-buffer", -- source for text in buffer
+  "hrsh7th/cmp-path", -- source for file system paths
+  "hrsh7th/cmp-nvim-lsp", -- source for lsp
+  "hrsh7th/cmp-cmdline", -- source for command line
+  "saadparwaiz1/cmp_luasnip", -- for autocompletion
+  "onsails/lspkind.nvim", -- vs-code like pictograms
+  ----
   "nvim-treesitter/nvim-treesitter-textobjects",
   "nvim-treesitter/nvim-treesitter",
   "nvim-tree/nvim-web-devicons",
@@ -42,16 +51,21 @@ local plugins = {
   "stevearc/oil.nvim",
   "nvim-lua/plenary.nvim",
   "MeanderingProgrammer/render-markdown.nvim",
-  -- "nvim-telescope/telescope-fzf-native.nvim",
   "nvim-telescope/telescope.nvim",
   "akinsho/toggleterm.nvim",
   "Exafunction/windsurf.nvim",
+  "SirNoChill/morg-mode.nvim",
 }
+
+local gh = function(x) return 'https://github.com/' .. x end
+local cb = function(x) return 'https://codeberg.org/' .. x end
 
 local base_url = "https://github.com/"
 
 -- special installers
-vim.pack.add({})
+vim.pack.add({
+  "/home/stormblessed/Code/neoj",
+})
 
 vim.pack.add(vim.tbl_map(function(plugin)
   return base_url .. plugin

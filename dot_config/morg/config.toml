@@ -1,0 +1,18 @@
+# morg-mode configuration
+# Location: $XDG_CONFIG_HOME/morg/config.toml
+
+# Root directory for all morg files.
+# All commands default to searching here when no files are specified.
+root = "~/.diary"
+
+[diary]
+directory = "~/.diary"              # Where diary notes are stored
+template = "~/.diary/daily_note.template"  # Daily note template
+today_file = "today.md"             # Active note filename
+archive_pattern = "{year}/{month}"  # Archive subdirectory pattern
+archive_filename = "{day}.md"       # Archive filename pattern
+carry_todos = true                  # Carry unchecked todos to new notes
+
+[capture]
+# templates_file = "~/.config/morg/capture.yaml"
+
