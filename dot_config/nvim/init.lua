@@ -54,7 +54,7 @@ local plugins = {
   "nvim-telescope/telescope.nvim",
   "akinsho/toggleterm.nvim",
   "Exafunction/windsurf.nvim",
-  "SirNoChill/morg-mode.nvim",
+  "Sir-NoChill/morg-mode.nvim",
 }
 
 local gh = function(x) return 'https://github.com/' .. x end
