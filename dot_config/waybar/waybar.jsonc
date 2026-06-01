@@ -85,14 +85,6 @@
     "align": 0,
     "justify": "left"
   },
-  "custom/update": {
-    "format": "",
-    "exec": "omarchy-update-available",
-    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
-    "tooltip-format": "Omarchy update available",
-    "signal": 7,
-    "interval": 21600
-  },
   "custom/updatespacman": {
     "format": "{}{icon}",
     "return-type": "json",
@@ -131,7 +123,7 @@
   "cpu": {
     "interval": 2,
     "format": "<span size='6pt' color='#df6124'>CPU </span>{usage}%",
-    "on-click": "omarchy-launch-or-focus-tui btop"
+    "on-click": "btop"
   },
     "memory": {
     "interval": 2,
