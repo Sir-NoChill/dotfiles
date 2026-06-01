@@ -11,6 +11,7 @@
 "
 " Sections:
 "    -> General
+"    -> Plugins (vim-plug)           [added]
 "    -> VIM user interface
 "    -> Colors and Fonts
 "    -> Files and backups
@@ -23,6 +24,8 @@
 "    -> Spell checking
 "    -> Misc
 "    -> Helper functions
+"    -> LSP, completion & clipboard   [added]
+"    -> Extra keybindings             [added]
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -51,6 +54,30 @@ nmap <leader>w :w!<cr>
 " :W sudo saves the file
 " (useful for handling the permission-denied error)
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins (vim-plug)            [added]
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Auto-install vim-plug on first launch
+let s:plug = expand('~/.vim/autoload/plug.vim')
+if empty(glob(s:plug))
+  silent execute '!curl -fLo ' . s:plug . ' --create-dirs '
+        \ . 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/plugged')
+  " LSP (async, pure VimL — no Node/Python deps)
+  Plug 'prabirshrestha/vim-lsp'
+  Plug 'mattn/vim-lsp-settings'              " :LspInstallServer to fetch servers
+  Plug 'prabirshrestha/asyncomplete.vim'
+  Plug 'prabirshrestha/asyncomplete-lsp.vim'
+  " Copy to your LOCAL clipboard over SSH via OSC52
+  Plug 'ojroques/vim-oscyank', {'branch': 'main'}
+call plug#end()
+" Note: plug#end() re-runs `filetype plugin indent on` and `syntax enable`,
+" so the duplicate lines elsewhere in this file are harmless.
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -142,6 +169,12 @@ if $COLORTERM == 'gnome-terminal'
     set t_Co=256
 endif
 
+" Use true colour if the terminal advertises it (modern SSH terminals do).
+" Harmless if not supported; comment out if 'desert' looks off for you.
+if has('termguicolors') && ($COLORTERM =~# 'truecolor\|24bit')
+    set termguicolors
+endif
+
 try
     colorscheme desert
 catch
@@ -172,6 +205,11 @@ set nobackup
 set nowb
 set noswapfile
 
+" Persistent undo (added) — survives across sessions
+set undofile
+set undodir=~/.vim/undo
+silent! call mkdir(expand('~/.vim/undo'), 'p')
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
@@ -185,6 +223,7 @@ set smarttab
 " 1 tab == 4 spaces
 set shiftwidth=4
 set tabstop=4
+set softtabstop=4
 
 " Linebreak on 500 characters
 set lbr
@@ -386,3 +425,78 @@ function! VisualSelection(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => LSP, completion & clipboard   [added]
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" --- Editor niceties for LSP / SSH not already set above ---
+set updatetime=300                 " snappier diagnostics / CursorHold
+set signcolumn=yes                 " keep the gutter open so text doesn't shift
+set shortmess+=c                   " quieter completion messages
+set ttimeout ttimeoutlen=50        " responsive <Esc> over ssh
+set completeopt=menuone,noinsert,noselect
+set number relativenumber          " remove this line if you prefer no line numbers
+
+" --- Completion (asyncomplete) ---
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <CR>    pumvisible() ? asyncomplete#close_popup() : "\<CR>"
+
+" --- LSP mappings (active only on buffers where a server attaches) ---
+" Type-definition is on `gy` (not gt) so it won't shadow your tab navigation.
+function! s:on_lsp_buffer_enabled() abort
+  setlocal omnifunc=lsp#complete
+  setlocal signcolumn=yes
+  nmap <buffer> gd        <plug>(lsp-definition)
+  nmap <buffer> gr        <plug>(lsp-references)
+  nmap <buffer> gi        <plug>(lsp-implementation)
+  nmap <buffer> gy        <plug>(lsp-type-definition)
+  nmap <buffer> K         <plug>(lsp-hover)
+  nmap <buffer> <leader>rn <plug>(lsp-rename)
+  nmap <buffer> <leader>a  <plug>(lsp-code-action)
+  nmap <buffer> [g        <plug>(lsp-previous-diagnostic)
+  nmap <buffer> ]g        <plug>(lsp-next-diagnostic)
+  nmap <buffer> <leader>f <plug>(lsp-document-format)
+  vmap <buffer> <leader>f <plug>(lsp-document-range-format)
+endfunction
+augroup lsp_attach
+  autocmd!
+  autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_diagnostics_virtual_text_enabled = 0
+
+" --- Clipboard over SSH (OSC52) ---
+" Copy keys live on <leader>y so they don't collide with your <leader>cd.
+let g:oscyank_silent = 1
+nmap <leader>y  <Plug>OSCYankOperator
+nmap <leader>yy <leader>y_
+vmap <leader>y  <Plug>OSCYankVisual
+
+" Auto-push every yank (not delete) to the local clipboard too
+function! s:osc_yank_on_yank(event) abort
+  if a:event.operator ==# 'y' && index(['', '+', '*'], a:event.regname) != -1
+    call OSCYankRegister(a:event.regname)
+  endif
+endfunction
+augroup OSCYankAuto
+  autocmd!
+  autocmd TextYankPost * call s:osc_yank_on_yank(v:event)
+augroup END
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Extra keybindings             [added]
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Make Y yank to end of line (consistent with C and D)
+nnoremap Y y$
+
+" Keep the cursor centred when jumping through search matches
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+" Re-centre after half-page scrolls
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
