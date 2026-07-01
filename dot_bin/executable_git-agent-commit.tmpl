@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+AGENT_SIGNING_KEY={{ (fromYaml (include ".machine_config.yml")).git.agentSigningKey }}
+AGENT_EMAIL={{ (fromYaml (include ".machine_config.yml")).git.agentEmail }}
+
+# git resolves `git-<name>` on PATH as the `git <name>` subcommand
+# https://git-scm.com/docs/git#_high_level_commands_porcelain
+exec env GNUPGHOME="${AGENT_GNUPGHOME:-$HOME/.gnupg}" \
+  git \
+    -c user.name="Agent" \
+    -c user.email="${AGENT_EMAIL:?set AGENT_EMAIL}" \
+    -c user.signingkey="${AGENT_SIGNING_KEY:?set AGENT_SIGNING_KEY}" \
+    commit -S "$@"

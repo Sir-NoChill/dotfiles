@@ -1,0 +1,149 @@
+---
+name: agent-commit
+description: Mandatory commit-and-push protocol for autonomous (agent) changes in this repository. Use this skill whenever you are about to stage, commit, push, create a branch, amend, or otherwise record any change to version control -- even a one-line fix or a "quick" change. It defines how to commit under the agent identity via `git agent-commit`, the required Conventional Commits format with a MANDATORY scope, and the requirement that the repository's git hooks (pre-commit and pre-push) be allowed to run and pass before anything is pushed. Always consult this before running `git commit`, `git push`, or any commit-related command; do not commit or push without following it.
+---
+
+# Agent commit protocol
+
+You are committing as an autonomous agent working alongside a human in the same
+repository. Two things must hold for every change you record:
+
+1. The commit must be attributable to the agent, not the human -- so the human
+   can audit exactly which commits you produced.
+2. The commit must not break the repository -- so it must pass the same hooks
+   and checks the human (and CI) rely on, before it ever reaches the remote.
+
+This skill is the single source of truth for how you do that. Follow it for
+every commit; there is no "too small to bother" exception.
+
+## 1. Commit with the agent identity
+
+Never use plain `git commit` for your own changes -- that records the commit
+under the human's stored identity and defeats the audit trail. Plain
+`git commit` belongs to the human; you use the dedicated subcommand:
+
+```
+git agent-commit -m "type(scope): subject"
+```
+
+`git agent-commit` is a wrapper that
+injects the agent name/email and GPG-signs the commit for that session only,
+without touching the repository's stored config. The signature is a bookkeeping
+marker that makes agent commits robustly distinguishable and tamper-evident; it
+is not a claim that no human could have produced it.
+
+It forwards all arguments to `git commit`, so the usual flags work
+(`-m`, additional `-m` for a body, `--amend`, etc.). It deliberately runs the
+normal commit path so pre-commit hooks execute -- see section 3.
+
+## 2. Conventional Commits, with a MANDATORY scope
+
+Every message MUST follow Conventional Commits, and the scope is REQUIRED --
+not optional as in the upstream spec. A scopeless message like
+`fix: correct null check` is invalid here and must be rejected by you before you
+even run the command. The scope is what lets a reader filter history by the area
+of the codebase a change touched, so omitting it removes most of the value.
+
+Format:
+
+```
+type(scope): subject
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Rules:
+
+- **type** is defined by the TAGS.md file in the repository. If one does not
+  exist you can use the tags as follows: feat, fix, docs, style, refactor, perf,
+  test, build, ci, chore, revert
+- **scope** is REQUIRED, non-empty, lowercase, and names the affected area
+  described by SCOPES.md in the active repository. If a SCOPES.md file does not
+  exist, then you can choose your own scope.
+  (a module, package, subsystem, or component -- e.g. `auth`, `parser`,
+  `api`, `ci`). Prefer a name that already appears in the codebase's structure.
+- **subject** is imperative mood, lowercase initial, no trailing period, and
+  short (aim for <= 50 characters).
+- **body** (optional) explains the *why*, wrapped at ~72 columns, after a blank
+  line.
+- **breaking changes** use `type(scope)!: subject` and/or a
+  `BREAKING CHANGE: ...` footer.
+- Reference the agent identity in a trailer when a grep-able marker that
+  survives rebases is useful: `Assisted-by: Agent (claude) <{{ (fromYaml (include ".machine_config.yml")).git.agentEmail }}>`.
+
+Reference for the spec (scope here is mandatory, unlike upstream):
+https://www.conventionalcommits.org/en/v1.0.0/
+
+**Examples**
+
+Input: Added user authentication with JWT tokens
+Output: `feat(auth): add JWT-based authentication`
+
+Input: Fixed a crash when the config file is missing
+Output: `fix(config): handle missing config file gracefully`
+
+Input: Renamed internal helpers, no behavior change
+Output: `refactor(parser): rename token-buffer helpers`
+
+Input: Bumped CI runner image and cache key
+Output: `ci(pipeline): bump runner image and cache key`
+
+If you cannot identify a meaningful scope, that is a signal the change is too
+broad or unclear -- split it or ask the human, rather than inventing a vague
+scope like `misc`.
+
+## 3. Let the git hooks gate the push
+
+A commit is not done when it is created; it is done when it has passed the
+repository's hooks and been pushed. All checks are wired into git hooks, so your
+job is simply to run the normal commit/push path and never bypass it. Run the
+steps in order; if any step fails, STOP, fix the cause, and restart from the
+failed step.
+
+1. **Stage** only the changes that belong to this commit.
+2. **Commit** with `git agent-commit -m "type(scope): subject"`. This runs the
+   pre-commit hooks. If a hook reformats files or fails, the commit aborts:
+   address the cause, re-stage, and commit again. Do **not** pass `--no-verify`.
+3. **Push** the branch: `git push -u <remote> <branch>`. This runs the pre-push
+   hooks, which are what gate the checks. Let them run to completion; if a hook
+   fails, fix the cause and push again. Never pass `--no-verify`.
+
+## Hard prohibitions
+
+- Never bypass verification: no `--no-verify`/`-n` on commit or push, and no
+  `SKIP=...` to disable pre-commit hooks.
+- Never commit your changes with plain `git commit` -- always `git agent-commit`.
+- Never push past a failing hook; fix the cause rather than working around it.
+- Never force-push a shared/protected branch. Use `--force-with-lease` only on
+  your own feature branch, and only when necessary.
+- Never invent a placeholder scope to satisfy the format; resolve the ambiguity
+  instead.
+
+## Setup (one-time, per machine)
+
+These steps make `git agent-commit` available and define the agent identity.
+The human typically does this once; documented here so the skill is
+self-contained.
+
+1. Put the wrapper on `PATH` so git resolves `git agent-commit`:
+
+   ```
+   ln -s "$PWD/scripts/git-agent-commit" ~/.bin/git-agent-commit
+   chmod +x ~/.local/bin/git-agent-commit   # already +x in the repo
+   ```
+
+2. Provide the agent identity and key via environment (e.g. in your shell rc or
+   the Claude Code environment). Keep these separate from the human's keyring;
+   `AGENT_GNUPGHOME` defaults to `~/.gnupg`:
+
+   ```
+   export AGENT_GIT_NAME="Agent (claude)"
+   export AGENT_GIT_EMAIL="{{ (fromYaml (include ".machine_config.yml")).git.agentEmail }}"
+   export AGENT_SIGNING_KEY="{{ (fromYaml (include ".machine_config.yml")).git.agentSigningKey }}"
+   export AGENT_GNUPGHOME="$HOME/.gnupg"   # optional; this is the default
+   ```
+
+3. Register the agent public key with the forge under a matching identity so its
+   signed commits show as verified.
