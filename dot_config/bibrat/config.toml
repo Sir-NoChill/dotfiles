@@ -1,0 +1,71 @@
+# BibRat configuration. Copy to one of:
+#   $BIBRAT_CONFIG
+#   $XDG_CONFIG_HOME/bibrat/config.toml
+#   ~/.config/bibrat/config.toml
+#
+# Every key is optional; omitted keys fall back to the built-in defaults shown.
+# Command-line flags (daemon) override these values.
+
+[store]
+# Where citations live. Default: $BIBRAT_DATA_DIR, else $XDG_DATA_HOME/bibrat,
+# else ~/.local/share/bibrat. A leading "~/" is expanded.
+data_dir = ""
+# Category new saves land in until changed from the connector.
+default_category = "inbox"
+
+[daemon]
+# Loopback address the connector server listens on (Zotero's default port).
+addr = "127.0.0.1:23119"
+# Download attachment files (e.g. citation_pdf_url full text).
+download_attachments = true
+# Enrich items with clean metadata via doi.org content negotiation.
+doi_lookup = true
+# Wrap BibTeX titles in extra braces to protect capitalization. Off by default
+# because the braces survive into the Hayagriva export as literal text.
+protect_case = false
+
+[cli]
+# Editor for `bibrat edit` / `--edit`. Empty => $VISUAL, $EDITOR, else "vi".
+editor = "nvim"
+# Default format for `bibrat export` when --format is omitted:
+# hayagriva | biblatex | csv
+export_format = "hayagriva"
+
+[query]
+# Preferred search tool for `bibrat query`.
+command = "rg"
+# Used when `command` is not found on PATH (BibRat adds -rn for grep).
+fallback = "grep"
+# Extra arguments passed before the pattern (e.g. ["-i"] for case-insensitive).
+args = ["-i"]
+
+[linkcheck]
+# External link checker for `bibrat linkcheck`.
+command = "lychee"
+# Extra arguments. A literal "{}" arg is replaced by the matched file list;
+# otherwise the files are appended after these args. Example: ["--no-progress"].
+args = []
+# Glob (relative to the store dir) selecting files to hand to the checker.
+# Supports *, ?, **, [..] and one level of {a,b} alternatives. See docs/linkcheck.md.
+glob = "**/*.bib"
+
+[archive]
+# Optional Internet Archive S3 keys (https://archive.org/account/s3.php). When
+# set, `bibrat archive save` uses the authenticated SPN2 JSON API and higher
+# rate limits; otherwise it uses the public no-auth Save Page Now endpoint.
+access_key = ""
+secret_key = ""
+
+[sync]
+# backend: git (versioned, conflict-safe) | rsync (no history) | none
+backend = "git"
+# git remote URL, or rsync destination (e.g. "server:bibrat/"). Empty = local only.
+remote = "ssh://git@ssh.git.blobfish.icu:15222/ayrton/citation-store.git"
+# Daemon auto-sync cadence, e.g. "10m". Empty or "0" disables the background
+# loop; `bibrat sync` still works on demand. Read by the daemon.
+interval = ""
+# git commit strategy:
+#   hybrid     - semantic commits for BibRat actions + a catch-all sweep (default)
+#   bulk       - no per-change commits; the sweep commits everything
+#   per-change - every BibRat write is its own semantic commit
+strategy = "hybrid"
