@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SIGNING_KEY="{{ (fromYaml (include ".machine_config.yml")).git.signingKey }}"
+EMAIL="{{ (fromYaml (include ".machine_config.yml")).git.yourEmail }}"
+NAME="{{ (fromYaml (include ".machine_config.yml")).git.yourName }}"
+
+# git resolves `git-<name>` on PATH as the `git <name>` subcommand
+# https://git-scm.com/docs/git#_high_level_commands_porcelain
+exec env GNUPGHOME="${AGENT_GNUPGHOME:-$HOME/.gnupg}" \
+  git \
+    -c user.name="${NAME:?set NAME}" \
+    -c user.email="${EMAIL:?set EMAIL}" \
+    -c user.signingkey="${SIGNING_KEY:?set SIGNING_KEY}" \
+    commit -S "$@"

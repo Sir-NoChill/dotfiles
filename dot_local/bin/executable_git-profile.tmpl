@@ -1,0 +1,200 @@
+#!/usr/bin/env bash
+# git-profile: switch identity/signing profile for the current repo.
+# Discovered by git via the `git-<cmd>` PATH convention [git-plugins].
+# Managed by chezmoi; source: dot_local/bin/executable_git-profile.tmpl.
+
+set -euo pipefail
+
+CONFIG_FILE="${GIT_PROFILE_CONFIG:-{{ .chezmoi.homeDir }}/.machine_config.yaml}"
+PROFILES_CONF="${GIT_PROFILE_RULES:-{{ .chezmoi.homeDir }}/.config/git/profiles.conf}"
+
+die()  { printf 'git-profile: %s\n' "$*" >&2; exit 1; }
+warn() { printf 'git-profile: %s\n' "$*" >&2; }
+need() { command -v "$1" >/dev/null 2>&1 || die "missing dependency: $1"; }
+
+need git
+need yq
+
+[[ -r "$CONFIG_FILE" ]] || die "cannot read $CONFIG_FILE (override with \$GIT_PROFILE_CONFIG)"
+
+in_repo()      { git rev-parse --is-inside-work-tree >/dev/null 2>&1; }
+require_repo() { in_repo || die "not inside a git repository"; }
+
+yqr() { yq -r "$1" "$CONFIG_FILE"; }
+
+is_null_or_empty() { [[ -z "$1" || "$1" == "null" ]]; }
+
+list_profiles() { yqr '.git_profiles | keys | .[]'; }
+
+profile_exists() {
+    local name="$1" hit
+    hit=$(yqr ".git_profiles | has(\"$name\")")
+    [[ "$hit" == "true" ]]
+}
+
+# Fetch a single field; `// ""` collapses missing keys to empty [jq-manual].
+get_field() { yqr ".git_profiles.\"$1\".$2 // \"\""; }
+
+apply_profile() {
+    local name="$1"
+    profile_exists "$name" || die "no such profile: $name"
+    require_repo
+
+    local n e stype skey sshcmd allowed
+    n=$(get_field      "$name" "name")
+    e=$(get_field      "$name" "email")
+    stype=$(get_field  "$name" "signing.type")
+    skey=$(get_field   "$name" "signing.key")
+    allowed=$(get_field "$name" "signing.allowed_signers")
+    sshcmd=$(get_field "$name" "ssh_command")
+
+    is_null_or_empty "$n" && die "profile $name: signing.name required"
+    is_null_or_empty "$e" && die "profile $name: signing.email required"
+
+    git config --local user.name  "$n"
+    git config --local user.email "$e"
+
+    case "$stype" in
+        gpg)
+            is_null_or_empty "$skey" && die "profile $name: signing.key required for gpg"
+            git config --local user.signingkey "$skey"
+            git config --local gpg.format      openpgp
+            git config --local commit.gpgsign  true
+            git config --local tag.gpgsign     true
+            ;;
+        ssh)
+            # signing.key may be a path or a literal `key::ssh-...` value [git-config].
+            is_null_or_empty "$skey" && die "profile $name: signing.key required for ssh"
+            git config --local user.signingkey "$skey"
+            git config --local gpg.format      ssh
+            git config --local commit.gpgsign  true
+            git config --local tag.gpgsign     true
+            if ! is_null_or_empty "$allowed"; then
+                git config --local gpg.ssh.allowedSignersFile "$allowed"
+            else
+                git config --local --unset gpg.ssh.allowedSignersFile 2>/dev/null || true
+            fi
+            ;;
+        ""|null)
+            for k in commit.gpgsign tag.gpgsign user.signingkey gpg.format gpg.ssh.allowedSignersFile; do
+                git config --local --unset "$k" 2>/dev/null || true
+            done
+            ;;
+        *) die "profile $name: unknown signing.type: $stype (want gpg|ssh)";;
+    esac
+
+    if ! is_null_or_empty "$sshcmd"; then
+        git config --local core.sshCommand "$sshcmd"
+    else
+        git config --local --unset core.sshCommand 2>/dev/null || true
+    fi
+
+    # Custom marker so `current` can round-trip; git-config tolerates arbitrary sections.
+    git config --local profile.name "$name"
+    printf 'applied profile: %s (%s <%s>)\n' "$name" "$n" "$e"
+}
+
+show_profile() {
+    local name="$1"
+    profile_exists "$name" || die "no such profile: $name"
+    yqr ".git_profiles.\"$name\""
+}
+
+current_profile() {
+    require_repo
+    local n
+    n=$(git config --local --get profile.name 2>/dev/null || true)
+    if [[ -z "$n" ]]; then
+        printf '(no profile applied)\n'; return 1
+    fi
+    printf '%s\n' "$n"
+}
+
+pick_profile() {
+    require_repo
+    local -a plist=()
+    mapfile -t plist < <(list_profiles)
+    (( ${#plist[@]} > 0 )) || die "no profiles defined in $CONFIG_FILE"
+
+    local chosen=""
+    if command -v fzf >/dev/null 2>&1; then
+        chosen=$(printf '%s\n' "${plist[@]}" \
+            | fzf --prompt='profile> ' --height=40% --reverse \
+                  --preview="yq -r '.git_profiles.\"{}\"' $(printf %q "$CONFIG_FILE")")
+    else
+        local i
+        for i in "${!plist[@]}"; do
+            printf '  %d) %s\n' "$((i + 1))" "${plist[$i]}" >&2
+        done
+        local sel
+        read -rp 'select> ' sel
+        [[ "$sel" =~ ^[0-9]+$ ]] || die "invalid selection: $sel"
+        (( sel >= 1 && sel <= ${#plist[@]} )) || die "out of range: $sel"
+        chosen="${plist[$((sel - 1))]}"
+    fi
+    [[ -n "$chosen" ]] || die "no selection"
+    apply_profile "$chosen"
+}
+
+# --get-regexp exits 1 when nothing matches [git-config]; tolerate that with `|| true`.
+auto_profile() {
+    require_repo
+    local url
+    url=$(git remote get-url origin 2>/dev/null) || die "no origin remote to match"
+    [[ -r "$PROFILES_CONF" ]] || die "no rules file: $PROFILES_CONF"
+
+    local key val prof
+    while read -r key val; do
+        [[ -z "$key" ]] && continue
+        prof="${key#profile.}"
+        prof="${prof%.match}"
+        if [[ "$url" == *"$val"* ]]; then
+            apply_profile "$prof"
+            return
+        fi
+    done < <(git config --file "$PROFILES_CONF" --get-regexp '^profile\..*\.match$' 2>/dev/null || true)
+
+    local defprof
+    defprof=$(git config --file "$PROFILES_CONF" --get default.profile 2>/dev/null || true)
+    if [[ -n "$defprof" ]]; then
+        apply_profile "$defprof"
+    else
+        die "no rule matched $url and no default.profile set in $PROFILES_CONF"
+    fi
+}
+
+usage() {
+    cat <<EOF
+usage: git profile [<command>] [<args>]
+
+commands:
+  list              list profile names defined in the yaml
+  show <name>       print a profile's fields
+  use <name>        apply <name> to the current repo (writes .git/config)
+  pick              interactive picker (fzf if available)  [default]
+  current           show the profile applied to this repo
+  auto              apply the profile whose match rule fits origin's URL
+  help              this message
+
+files:
+  $CONFIG_FILE
+  $PROFILES_CONF
+
+env overrides:
+  GIT_PROFILE_CONFIG   path to the yaml
+  GIT_PROFILE_RULES    path to the match-rules ini
+EOF
+}
+
+cmd="${1:-pick}"
+shift || true
+case "$cmd" in
+    list)              list_profiles ;;
+    show)              [[ $# -ge 1 ]] || die "show requires a name"; show_profile "$1" ;;
+    use)               [[ $# -ge 1 ]] || die "use requires a name";  apply_profile "$1" ;;
+    pick)              pick_profile ;;
+    current)           current_profile ;;
+    auto)              auto_profile ;;
+    help|-h|--help)    usage ;;
+    *)                 die "unknown command: $cmd (try: git profile help)" ;;
+esac
