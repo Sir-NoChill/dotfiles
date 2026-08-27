@@ -59,13 +59,13 @@ command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins (vim-plug)            [added]
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Auto-install vim-plug on first launch
-let s:plug = expand('~/.vim/autoload/plug.vim')
-if empty(glob(s:plug))
-  silent execute '!curl -fLo ' . s:plug . ' --create-dirs '
-        \ . 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
+" Auto-install vim-plug on first launch -- FIXME -- need to verify
+" let s:plug = expand('~/.vim/autoload/plug.vim')
+" if empty(glob(s:plug))
+"   silent execute '!curl -fLo ' . s:plug . ' --create-dirs '
+"         \ . 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+"   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+" endif
 
 call plug#begin('~/.vim/plugged')
   " LSP (async, pure VimL — no Node/Python deps)
