@@ -1,13 +1,19 @@
 # Initialization code that may require console input must go above this block
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet # disable prompt notification
+export POWERLEVEL9K_CONFIG_FILE="$XDG_CONFIG_HOME/p10k.zsh"
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+
 source <(fzf --zsh)
 export PATH=$HOME/.bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:$HOME/.diary:$PATH
-export ZSH="$HOME/.oh-my-zsh"
+export ZSH="$XDG_CONFIG_HOME/oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k" # https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 
 zstyle ':omz:update' mode auto # { disabled,  reminder }
@@ -36,18 +42,13 @@ source $ZSH/oh-my-zsh.sh
 # Session predicates
 is_ssh()       { [[ -n ${SSH_CONNECTION:-} ]]; }
 is_tmux()      { [[ -n ${TMUX:-} ]]; }
-is_graphcal() { [[ -n ${DISPLAY:-} || -n ${WAYLAND_DISPLAY:-} ]]; }
+is_graphical() { [[ -n ${DISPLAY:-} || -n ${WAYLAND_DISPLAY:-} ]]; }
 
 has_go() { command -v go >/dev/null 2>&1 }
 has_lake() { command -v lake >/dev/null 2>&1 }
 has_cargo() { command -v cargo >/dev/null 2>&1 }
 has_uv() { command -v uv >/dev/null 2>&1 }
 has_elan() { command -v elan >/dev/null 2>&1 }
-
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 # export LANG=en_US.UTF-8 # manual set lang
@@ -62,7 +63,7 @@ export UV_CACHE_DIR="$XDG_CACHE_HOME/uv"
 # Preferred editor for local and remote sessions
 is_ssh       && export TERM='vt100'
 is_graphical && export EDITOR='nvim'
-is_tmux      && export EDITOR='nvim'
+is_tmux      && export EDITOR='vim'
 
 # users are encouraged to define aliases within a top-level file in
 # the $ZSH_CUSTOM folder, with .zsh extension.
