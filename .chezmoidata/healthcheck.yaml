@@ -1,0 +1,76 @@
+# Consumed by run_after_healthcheck.py.tmpl.
+#   required: true  -> a MISSING binary fails `chezmoi apply` (non-zero exit)
+#   required omitted -> optional; a MISSING binary only warns
+
+healthcheck:
+  groups:
+    - name: Hypr
+      binaries:
+        - name: hyprland
+          required: true
+        - name: hyprctl
+          required: true
+        - name: hyprsunset
+        - name: hyprsysteminfo
+        - name: hyprlauncher
+        - name: hypridle
+        - name: hyprpicker
+        - name: hyprpaper
+        - name: hyprshutdown
+        - name: hyprcursor-util
+        - name: waybar          # Wayland bar, lives in the Hypr ecosystem
+        - name: grim            # screen capture
+        - name: slurp           # screen area selection
+        - name: swappy          # annotations
+        - name: wl-copy         # integration with system clipboard
+
+    - name: Utils
+      binaries:
+        - name: morg            # markdown + org
+        - name: bibrat          # cli bibliography management + zotero
+        - name: thunar          # file manager
+
+    - name: VCS
+      binaries:
+        - name: git
+          required: true
+        - name: gpg             # commit signing -> grouped with VCS
+          required: true
+        - name: chezmoi
+          required: true
+        - name: jj
+        - name: difft           # difftastic; structural diff for VCS
+        - name: git-profile
+
+    - name: Terminal
+      binaries:
+        - name: zsh
+          required: true
+        - name: alacritty
+        - name: ghostty
+
+    - name: Package Management
+      binaries:
+        - name: nix
+          required: true
+        - name: pacman
+        - name: paru
+
+    - name: Audio
+      binaries:
+        - name: wireplumber
+          required: true
+        - name: mpd
+
+    - name: Dev
+      binaries:
+        - name: nvim
+          required: true
+        - name: vim
+          required: true
+        - name: ssh             # networking; parked in Dev -- move if wanted
+          required: true
+        - name: go
+        - name: cargo
+        - name: rustup
+        - name: just

@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+# Place at: <chezmoi source>/run_after_healthcheck.py.tmpl
+#
+# chezmoi runs run_after_ scripts on every `chezmoi apply`, after files and any
+# run_once_ install scripts. On unix chezmoi executes the script via its
+# shebang, so this runs under the system python3 (compatible with 3.9+/3.14).
+#
+# Optional tools that are missing only warn; REQUIRED tools that are missing
+# make the script exit non-zero, which fails the apply on purpose.
+from __future__ import annotations
+
+import json
+import shutil
+import sys
+from dataclasses import dataclass
+
+# Injected by chezmoi from .chezmoidata. `toJson` is a sprig template function:
+# https://masterminds.github.io/sprig/defaults.html
+_GROUPS_RAW: list[dict] = json.loads(r"""{{ .healthcheck.groups | toJson }}""")
+
+
+@dataclass(frozen=True)
+class Binary:
+    name: str
+    required: bool = False
+
+
+@dataclass(frozen=True)
+class Group:
+    name: str
+    binaries: tuple[Binary, ...]
+
+
+@dataclass(frozen=True)
+class Row:
+    group: str
+    name: str
+    required: bool
+    path: str | None
+
+    @property
+    def present(self) -> bool:
+        return self.path is not None
+
+
+def load_groups(raw: list[dict]) -> tuple[Group, ...]:
+    return tuple(
+        Group(
+            name=g["name"],
+            binaries=tuple(
+                Binary(name=b["name"], required=bool(b.get("required", False)))
+                for b in g["binaries"]
+            ),
+        )
+        for g in raw
+    )
+
+
+def check(groups: tuple[Group, ...]) -> list[Row]:
+    rows: list[Row] = []
+    for group in groups:
+        for b in group.binaries:
+            rows.append(
+                Row(group.name, b.name, b.required, shutil.which(b.name))  # stdlib `which`
+            )
+    return rows
+
+
+_COLOR = sys.stdout.isatty()
+GREEN = "\033[32m" if _COLOR else ""
+RED = "\033[31m" if _COLOR else ""
+BOLD = "\033[1m" if _COLOR else ""
+DIM = "\033[2m" if _COLOR else ""
+RESET = "\033[0m" if _COLOR else ""
+
+
+def _style(text: str, width: int, *codes: str) -> str:
+    # pad on the plain text first so ANSI codes never skew column alignment
+    padded = text.ljust(width)
+    prefix = "".join(codes)
+    return f"{prefix}{padded}{RESET}" if prefix else padded
+
+
+def render(rows: list[Row]) -> None:
+    headers = ("STATUS", "GROUP", "BINARY", "PATH")
+    plain = [
+        (
+            "OK" if r.present else "MISSING",
+            r.group,
+            r.name + (" *" if r.required else ""),
+            r.path or "-",
+        )
+        for r in rows
+    ]
+    widths = [
+        max(len(headers[i]), *(len(p[i]) for p in plain)) for i in range(len(headers))
+    ]
+    bar = "+" + "+".join("-" * (w + 2) for w in widths) + "+"
+
+    print()
+    print(f"{BOLD}chezmoi healthcheck{RESET}  {DIM}(* = required){RESET}")
+    print(bar)
+    print("| " + " | ".join(h.ljust(widths[i]) for i, h in enumerate(headers)) + " |")
+    print(bar)
+    for r, p in zip(rows, plain):
+        status = _style(p[0], widths[0], GREEN if r.present else RED)
+        group = _style(p[1], widths[1])
+        name = _style(p[2], widths[2], BOLD) if r.required else _style(p[2], widths[2])
+        path = _style(p[3], widths[3]) if r.present else _style(p[3], widths[3], DIM)
+        print(f"| {status} | {group} | {name} | {path} |")
+    print(bar)
+
+
+def summarize(rows: list[Row]) -> int:
+    missing = [r for r in rows if not r.present]
+    missing_required = [r for r in missing if r.required]
+    present = len(rows) - len(missing)
+
+    print()
+    print(f"  {GREEN}{present}/{len(rows)} present{RESET}")
+    if missing:
+        print(f"  {RED}{len(missing)} missing{RESET}: {', '.join(r.name for r in missing)}")
+    print()
+
+    if missing_required:
+        names = ", ".join(r.name for r in missing_required)
+        print(f"{BOLD}{RED}ERROR: required tools missing: {names}{RESET}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def main() -> int:
+    rows = check(load_groups(_GROUPS_RAW))
+    render(rows)
+    return summarize(rows)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
