@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SIGNING_KEY="{{ (fromYaml (include ".machine_config.yml")).git.signingKey }}"
-EMAIL="{{ (fromYaml (include ".machine_config.yml")).git.yourEmail }}"
-NAME="{{ (fromYaml (include ".machine_config.yml")).git.yourName }}"
+SIGNING_KEY="{{ (fromYaml (include ".machine_config.yml")).git.profiles.personal.key }}"
+EMAIL="{{ (fromYaml (include ".machine_config.yml")).git.profiles.personal.email }}"
+NAME="{{ (fromYaml (include ".machine_config.yml")).git.profiles.personal.name }}"
 
 # git resolves `git-<name>` on PATH as the `git <name>` subcommand
 # https://git-scm.com/docs/git#_high_level_commands_porcelain

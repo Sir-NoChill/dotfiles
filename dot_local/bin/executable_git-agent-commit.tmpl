@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-AGENT_SIGNING_KEY={{ (fromYaml (include ".machine_config.yml")).git.agentSigningKey }}
-AGENT_EMAIL={{ (fromYaml (include ".machine_config.yml")).git.agentEmail }}
+AGENT_SIGNING_KEY={{ (fromYaml (include ".machine_config.yml")).git.profiles.agent_claude.key }}
+AGENT_EMAIL={{ (fromYaml (include ".machine_config.yml")).git.profiles.agent_claude.email }}
 
 # git resolves `git-<name>` on PATH as the `git <name>` subcommand
 # https://git-scm.com/docs/git#_high_level_commands_porcelain

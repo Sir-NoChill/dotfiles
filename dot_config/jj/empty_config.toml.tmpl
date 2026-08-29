@@ -30,7 +30,7 @@ sign-on-push = true
 behaviour = "own"
 backend = "gpg"
 # The key id (replace with your actual key)
-key = "{{ (fromYaml (include ".machine_config.yml")).git.signingKey }}"
+key = "{{ (fromYaml (include ".machine_config.yml")).git.profiles.personal.key }}"
 
 [aliases]
 # Some useful aliases in jj’s style

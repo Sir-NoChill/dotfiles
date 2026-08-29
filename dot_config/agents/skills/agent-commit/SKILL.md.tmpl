@@ -71,7 +71,7 @@ Rules:
 - **breaking changes** use `type(scope)!: subject` and/or a
   `BREAKING CHANGE: ...` footer.
 - Reference the agent identity in a trailer when a grep-able marker that
-  survives rebases is useful: `Assisted-by: <{{ (fromYaml (include ".machine_config.yml")).git.agentEmail }}>`.
+  survives rebases is useful: `Assisted-by: <{{ (fromYaml (include ".machine_config.yml")).git.profiles.agent_claude.email }}>`.
 
 Reference for the spec (scope here is mandatory, unlike upstream):
 https://www.conventionalcommits.org/en/v1.0.0/
@@ -196,8 +196,8 @@ self-contained.
    ```
    export AGENT_GIT_NAME="Agent (claude)"
 
-   export AGENT_GIT_EMAIL="{{ (fromYaml (include ".machine_config.yml")).git.agentEmail }}"
-   export AGENT_SIGNING_KEY="{{ (fromYaml (include ".machine_config.yml")).git.agentSigningKey }}"
+   export AGENT_GIT_EMAIL="{{ (fromYaml (include ".machine_config.yml")).git.profiles.agent_claude.email }}"
+   export AGENT_SIGNING_KEY="{{ (fromYaml (include ".machine_config.yml")).git.profiles.agent_claude.key }}"
    export AGENT_GNUPGHOME="$HOME/.gnupg"   # optional; this is the default
    ```
 

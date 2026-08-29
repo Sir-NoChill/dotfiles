@@ -1,0 +1,6 @@
+{{- $src := (fromYaml (include ".machine_config.yml")).git.profiles -}}
+{{- $out := dict -}}
+{{- range $key, $p := $src -}}
+{{-   $_ := set $out $key (dict "user.email" $p.email "user.name" $p.name "user.signingkey" $p.key) -}}
+{{- end -}}
+{{ dict "profiles" $out | toPrettyJson }}
