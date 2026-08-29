@@ -1,90 +1,94 @@
 #!/usr/bin/env python3
+"""Single-line active-window pill for Waybar (Hyprland).
+
+Prints "<app>  <title>" (amber app name, parchment title) and falls back to
+a dim "Desktop" when nothing is focused. Streams updates off the Hyprland
+event socket, so it repaints the instant focus changes.
+"""
 import os
-import socket
-import sys
-import json
-import subprocess
-import html
 import re
+import sys
+import html
+import json
+import socket
+import subprocess
 
-# Configuration
-MAX_TITLE_LEN = 30
+MAX_TITLE_LEN = 40
 
-def get_hyprland_data(command):
+# Ember palette
+ACCENT = "#c9752b"   # amber   — app / class
+TEXT   = "#e7d3b1"   # parchment — title
+MUTED  = "#6b4a2f"   # smoke   — idle / desktop
+
+
+def hypr(command):
     try:
-        output = subprocess.check_output(["hyprctl", command, "-j"], text=True)
-        return json.loads(output)
+        return json.loads(subprocess.check_output(["hyprctl", command, "-j"], text=True))
     except Exception:
         return {}
 
+
 def print_status():
-    # 1. Get Active Window
-    window = get_hyprland_data("activewindow")
+    window = hypr("activewindow")
 
-    # Defaults for "Desktop" state
-    top_line = "Desktop"
-    bottom_line = ""
-
-    # 2. Determine State
     if window and window.get("address"):
-        # CASE A: Window is active
-        top_line = window.get("class", "Unknown") or "Unknown"
+        app = (window.get("class") or "Unknown").strip() or "Unknown"
+        title = (window.get("title") or "").strip()
 
-        title = window.get("title", "") or ""
-
-        # Safely get class (Hyprland may return null)
-        app_class = (window.get("class") or "").lower()
-
-        # Remove Discord/Vesktop unread counter like "(209) "
-        if "discord" in app_class or "vesktop" in app_class:
-            title = re.sub(r"^\(\d+\)\s*", "", title)
+        low = app.lower()
+        if "discord" in low or "vesktop" in low:
+            title = re.sub(r"^\(\d+\)\s*", "", title)       # drop "(209) " unread counter
             title = re.sub(r"^Discord\s*\|\s*", "", title)
 
         if len(title) > MAX_TITLE_LEN:
-            title = title[:MAX_TITLE_LEN - 3]
+            title = title[:MAX_TITLE_LEN - 1].rstrip() + "…"
 
-        bottom_line = title
-
+        app_e, title_e = html.escape(app), html.escape(title)
+        if title_e:
+            text = (f"<span foreground='{ACCENT}'>{app_e}</span>"
+                    f"  <span foreground='{TEXT}'>{title_e}</span>")
+        else:
+            text = f"<span foreground='{ACCENT}'>{app_e}</span>"
+        tooltip = f"{app}: {title}" if title else app
     else:
-        # CASE B: Desktop / Empty Workspace
-        workspace = get_hyprland_data("activeworkspace")
-        ws_id = workspace.get("id", "1")
-        top_line = f"Workspace {ws_id}"
-        bottom_line = "\u00A0"
+        text = f"<span foreground='{MUTED}'>Desktop</span>"
+        tooltip = "Desktop"
 
-    # 3. Sanitize for Pango
-    top_line = html.escape(top_line)
-    bottom_line = html.escape(bottom_line)
+    print(json.dumps({"text": text, "class": "custom-windowpill", "tooltip": tooltip}), flush=True)
 
-    # 4. Format with Pango Markup
-    text = (
-        f"<span size='small' foreground='#df6124' rise='-1000'>{top_line}</span>\n"
-        f"<span size='7500' weight='bold' foreground='#cccccc'>{bottom_line}</span>"
-    )
 
-    # 5. Output JSON
-    print(json.dumps({
-        "text": text,
-        "class": "custom-window",
-        "tooltip": f"{top_line}: {bottom_line}"
-    }), flush=True)
+def main():
+    print_status()
 
-# Initial Run
-print_status()
+    sig = os.getenv("HYPRLAND_INSTANCE_SIGNATURE")
+    if not sig:
+        return  # not on Hyprland — show the initial state and stop
 
-# Listen to Hyprland Socket for instant updates
-hypr_sig = os.getenv("HYPRLAND_INSTANCE_SIGNATURE")
-if not hypr_sig:
-    sys.exit(1)
+    # Hyprland >= 0.40 moved the socket under XDG_RUNTIME_DIR; keep /tmp as a fallback.
+    xdg = os.getenv("XDG_RUNTIME_DIR", "")
+    candidates = [
+        os.path.join(xdg, "hypr", sig, ".socket2.sock") if xdg else "",
+        f"/tmp/hypr/{sig}/.socket2.sock",
+    ]
+    socket_path = next((p for p in candidates if p and os.path.exists(p)), None)
+    if not socket_path:
+        return
 
-socket_path = f"/tmp/hypr/{hypr_sig}/.socket2.sock"
-
-if os.path.exists(socket_path):
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
         client.connect(socket_path)
+        buf = ""
         while True:
-            data = client.recv(1024).decode("utf-8", errors="ignore")
-            if not data:
+            chunk = client.recv(4096).decode("utf-8", errors="ignore")
+            if not chunk:
                 break
-            if "activewindow>>" in data or "workspace>>" in data:
+            buf += chunk
+            if any(ev in buf for ev in ("activewindow>>", "workspace>>", "closewindow>>", "openwindow>>")):
                 print_status()
+                buf = ""
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)

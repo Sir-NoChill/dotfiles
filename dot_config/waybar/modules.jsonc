@@ -1,0 +1,247 @@
+// Ember Waybar — module definitions
+// Grouped into three floating pills: left (workspaces + window),
+// center (clock), right (media + system + tray). Volume and backlight
+// expand into sliders on hover.
+{
+    /* ===============  GROUPS  =============== */
+
+    "group/left": {
+        "orientation": "horizontal",
+        "modules": [ "hyprland/workspaces", "custom/windowpill" ]
+    },
+
+    "group/right": {
+        "orientation": "horizontal",
+        "modules": [
+            "mpris",
+            "group/group-volume",
+            "group/group-backlight",
+            "network",
+            "bluetooth",
+            "cpu",
+            "memory",
+            "battery",
+            "custom/updatespacman",
+            "custom/voxtype",
+            "custom/screenrecording-indicator",
+            "custom/idle-indicator",
+            "custom/notification-silencing-indicator",
+            "tray"
+        ]
+    },
+
+    // Hover the volume icon -> slider slides out
+    "group/group-volume": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 500,
+            "transition-left-to-right": true,
+            "reveal-delay": 250
+        },
+        "modules": [ "pulseaudio", "pulseaudio/slider" ]
+    },
+
+    // Hover the backlight icon -> slider slides out
+    "group/group-backlight": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 500,
+            "transition-left-to-right": true,
+            "reveal-delay": 250
+        },
+        "modules": [ "backlight", "backlight/slider" ]
+    },
+
+    /* ===============  LEFT  =============== */
+
+    "hyprland/workspaces": {
+        "all-outputs": true,
+        "format": "{icon}",
+        "show-special": false,
+        "on-click": "activate",
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+        "on-scroll-down": "hyprctl dispatch workspace e-1",
+        "persistent-workspaces": { "*": 5 },
+        "format-icons": {
+            "active":  "●",
+            "default": "●",
+            "empty":   "○"
+        }
+    },
+
+    "custom/windowpill": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.config/waybar/window_pill.py",
+        "max-length": 48,
+        "tooltip": true
+    },
+
+    /* ===============  CENTER  =============== */
+
+    "clock": {
+        "format": "{:%H:%M  ·  %a %d}",
+        "format-alt": "{:%d %B   W%V   %Y}",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 3,
+            "format": {
+                "months":   "<span color='#ffb247'><b>{}</b></span>",
+                "weekdays": "<span color='#c9752b'><b>{}</b></span>",
+                "days":     "<span color='#e7d3b1'>{}</span>",
+                "today":    "<span color='#ff5028'><b><u>{}</u></b></span>"
+            }
+        },
+        "on-click-right": "omarchy-launch-floating-terminal-with-presentation omarchy-tz-select"
+    },
+
+    /* ===============  RIGHT: media  =============== */
+
+    "mpris": {
+        "format": "󰝚  {artist} - {title}",
+        "format-paused": "󰏤  {artist} - {title}",
+        "tooltip-format": "{album}",
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl previous",
+        "on-scroll-down": "playerctl next",
+        "max-length": 40,
+        "ignored-players": [ "firefox", "chromium", "brave" ]
+    },
+
+    /* ===============  RIGHT: system  =============== */
+
+    "pulseaudio": {
+        "format": "{icon}",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "󰋋",
+            "headset": "󰋎",
+            "default": [ "󰕿", "󰖀", "󰕾" ]
+        },
+        "scroll-step": 5,
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "on-click-right": "omarchy-launch-audio",
+        "tooltip-format": "{desc}  ·  {volume}%"
+    },
+
+    "pulseaudio/slider": {
+        "min": 0,
+        "max": 100,
+        "orientation": "horizontal"
+    },
+
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{icon}",
+        "format-icons": [ "󰃜", "󰃝", "󰃞", "󰃟", "󰃠" ],
+        "scroll-step": 2,
+        "tooltip-format": "Backlight  ·  {percent}%"
+    },
+
+    "backlight/slider": {
+        "device": "intel_backlight",
+        "min": 5,
+        "max": 100,
+        "orientation": "horizontal"
+    },
+
+    "network": {
+        "interval": 5,
+        "format-wifi": "{icon}",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "󰤮",
+        "format-icons": [ "󰤯", "󰤟", "󰤢", "󰤥", "󰤨" ],
+        "tooltip-format-wifi": "{essid}  ({signalStrength}%)\n⇣ {bandwidthDownBytes}   ⇡ {bandwidthUpBytes}",
+        "tooltip-format-ethernet": "{ifname}\n⇣ {bandwidthDownBytes}   ⇡ {bandwidthUpBytes}",
+        "tooltip-format-disconnected": "Disconnected",
+        "on-click": "omarchy-launch-wifi"
+    },
+
+    "bluetooth": {
+        "format": "󰂯",
+        "format-on": "󰂯",
+        "format-off": "󰂲",
+        "format-disabled": "󰂲",
+        "format-connected": "󰂱",
+        "tooltip-format": "Devices connected: {num_connections}",
+        "tooltip-format-connected": "{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}",
+        "on-click": "omarchy-launch-bluetooth"
+    },
+
+    "cpu": {
+        "interval": 2,
+        "format": "<span size='7pt' color='#c9752b'>CPU </span>{usage}%",
+        "on-click": "omarchy-launch-or-focus-tui btop",
+        "states": { "warning": 80, "critical": 95 }
+    },
+
+    "memory": {
+        "interval": 2,
+        "format": "<span size='7pt' color='#c9752b'>MEM </span>{percentage}%",
+        "on-click": "omarchy-launch-or-focus-tui btop",
+        "states": { "warning": 80, "critical": 95 }
+    },
+
+    "battery": {
+        "interval": 5,
+        "format": "{icon} {capacity}%",
+        "format-charging": "{icon} {capacity}%",
+        "format-plugged": "{icon} {capacity}%",
+        "format-full": "{icon} {capacity}%",
+        "format-icons": {
+            "charging": [ "󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅" ],
+            "default":  [ "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹" ]
+        },
+        "tooltip-format": "{timeTo}",
+        "on-click": "omarchy-menu power",
+        "states": { "warning": 20, "critical": 10 }
+    },
+
+    /* ===============  RIGHT: indicators  =============== */
+
+    "custom/updatespacman": {
+        "format": "{}{icon}",
+        "return-type": "json",
+        "format-icons": { "has-updates": " 󰏖", "updated": "" },
+        "exec-if": "which waybar-module-pacman-updates",
+        "exec": "waybar-module-pacman-updates --no-zero-output"
+    },
+
+    "custom/voxtype": {
+        "exec": "omarchy-voxtype-status",
+        "return-type": "json",
+        "format": "{icon}",
+        "format-icons": { "idle": "", "recording": "󰍬", "transcribing": "󰔟" },
+        "tooltip": true,
+        "on-click": "omarchy-voxtype-model",
+        "on-click-right": "omarchy-voxtype-config"
+    },
+
+    "custom/idle-indicator": {
+        "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+        "return-type": "json",
+        "signal": 9,
+        "on-click": "omarchy-toggle-idle"
+    },
+
+    "custom/notification-silencing-indicator": {
+        "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+        "return-type": "json",
+        "signal": 10,
+        "on-click": "omarchy-toggle-notification-silencing"
+    },
+
+    "custom/screenrecording-indicator": {
+        "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+        "return-type": "json",
+        "signal": 8,
+        "on-click": "omarchy-cmd-screenrecord"
+    },
+
+    "tray": {
+        "icon-size": 13,
+        "spacing": 10
+    }
+}
