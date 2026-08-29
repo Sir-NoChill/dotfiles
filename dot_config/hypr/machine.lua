@@ -6,20 +6,20 @@
 
 return {
     -- Programs
-    terminal    = "/usr/bin/ghostty",
-    editor      = "nvim",
-    fileManager = "thunar",
+    terminal     = "/usr/bin/ghostty",
+    editor       = "nvim",
+    fileManager  = "thunar",
 
     -- Hypr System Utils
-    menu        = "hyprlauncher",
-    lockManager = "hyprlock",
-    idleManager = "hypridle",
-    systemInfo  = "hyprsysteminfo",
-    picker      = "hyprpicker",
-    wallpaper   = "hyprpaper",
-    sunset      = "hyprsunset",
-    shutdown    = "hyprshutdown",
-    cursor      = "hyprcursor",
+    menu         = "hyprlauncher",
+    lockManager  = "hyprlock",
+    idleManager  = "hypridle",
+    systemInfo   = "hyprsysteminfo",
+    colourPicker = "hyprpicker",
+    wallpaper    = "hyprpaper",
+    sunset       = "hyprsunset",
+    shutdown     = "hyprshutdown",
+    cursor       = "hyprcursor",
 
     -- Keyboard
     kb_layout  = "us,ca",
