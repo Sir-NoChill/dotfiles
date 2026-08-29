@@ -9,7 +9,7 @@ fi
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-e
+
 # export MANPATH="/usr/local/man:$MANPATH"
 # export LANG=en_US.UTF-8 # manual set lang
 # export ARCHFLAGS="-arch $(uname -m)" # Compilation flags
@@ -21,7 +21,7 @@ export ELAN_HOME="$XDG_DATA_HOME/elan"
 export GOBIN="$GOPATH/bin"
 export UV_CACHE_DIR="$XDG_CACHE_HOME/uv"
 
-xport XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 
 source <(fzf --zsh)
 export PATH="$HOME/.bin:$CARGO_BIN:$HOME/.local/bin:/usr/local/bin:$HOME/.diary:$GOBIN:$PATH"
