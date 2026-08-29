@@ -16,6 +16,7 @@ hl.bind(mainMod .. " + Space",          hl.dsp.exec_cmd("hyprctl switchxkblayout
 hl.bind(mainMod .. " + ALT + L",        hl.dsp.exec_cmd(m.lockManager))
 hl.bind(mainMod .. " + I",              hl.dsp.exec_cmd(m.systemInfo))
 hl.bind(mainMod .. " + ALT + C",        hl.dsp.exec_cmd(m.colourPicker))
+hl.bind(mainMod .. " + ALT + DELETE",   hl.dsp.exec_cmd(m.shutdown))
 
 -- Move focus with mainMod + hjkl
 hl.bind(mainMod .. " + H", hl.dsp.focus({ direction = "left" }))
