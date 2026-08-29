@@ -9,10 +9,22 @@ fi
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+e
+# export MANPATH="/usr/local/man:$MANPATH"
+# export LANG=en_US.UTF-8 # manual set lang
+# export ARCHFLAGS="-arch $(uname -m)" # Compilation flags
+export CARGO_HOME="$XDG_DATA_HOME/cargo"
+export CARGO_BIN="$CARGO_HOME/bin"
+export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
+export GOPATH="$XDG_DATA_HOME/go"
+export ELAN_HOME="$XDG_DATA_HOME/elan"
+export GOBIN="$GOPATH/bin"
+export UV_CACHE_DIR="$XDG_CACHE_HOME/uv"
+
+xport XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 
 source <(fzf --zsh)
-export PATH=$HOME/.bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:$HOME/.diary:$PATH
+export PATH="$HOME/.bin:$CARGO_BIN:$HOME/.local/bin:/usr/local/bin:$HOME/.diary:$GOBIN:$PATH"
 export ZSH="$XDG_CONFIG_HOME/oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k" # https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 
@@ -49,16 +61,6 @@ has_lake() { command -v lake >/dev/null 2>&1 }
 has_cargo() { command -v cargo >/dev/null 2>&1 }
 has_uv() { command -v uv >/dev/null 2>&1 }
 has_elan() { command -v elan >/dev/null 2>&1 }
-
-# export MANPATH="/usr/local/man:$MANPATH"
-# export LANG=en_US.UTF-8 # manual set lang
-# export ARCHFLAGS="-arch $(uname -m)" # Compilation flags
-export CARGO_HOME="$XDG_DATA_HOME/cargo"
-export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
-export GOPATH="$XDG_DATA_HOME/go"
-export ELAN_HOME="$XDG_DATA_HOME/elan"
-export GOBIN="$GOPATH/bin"
-export UV_CACHE_DIR="$XDG_CACHE_HOME/uv"
 
 # Preferred editor for local and remote sessions
 is_ssh       && export TERM='vt100'
