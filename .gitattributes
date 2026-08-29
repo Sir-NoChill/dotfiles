@@ -1,0 +1,17 @@
+# Raster imagery and heightmaps
+dot_local/state/assets/**/*.tif filter=lfs diff=lfs merge=lfs -text
+dot_local/state/assets/**/*.tiff filter=lfs diff=lfs merge=lfs -text
+dot_local/state/assets/**/*.png filter=lfs diff=lfs merge=lfs -text
+dot_local/state/assets/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+dot_local/state/assets/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+dot_local/state/assets/**/*.webp filter=lfs diff=lfs merge=lfs -text
+
+# Raw / layered artwork
+dot_local/state/assets/**/*.psd filter=lfs diff=lfs merge=lfs -text
+dot_local/state/assets/**/*.xcf filter=lfs diff=lfs merge=lfs -text
+dot_local/state/assets/**/*.kra filter=lfs diff=lfs merge=lfs -text
+dot_local/state/assets/**/*.svg filter=lfs diff=lfs merge=lfs -text
+
+# Catch-all for anything else large dropped into assets/
+dot_local/state/assets/**/*.zip filter=lfs diff=lfs merge=lfs -text
+dot_local/state/assets/**/*.7z filter=lfs diff=lfs merge=lfs -text
