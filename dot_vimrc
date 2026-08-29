@@ -75,6 +75,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'prabirshrestha/asyncomplete-lsp.vim'
   " Copy to your LOCAL clipboard over SSH via OSC52
   Plug 'ojroques/vim-oscyank', {'branch': 'main'}
+  " vinegar for file managemenr
+  Plug 'tpope/vim-vinegar'
 call plug#end()
 " Note: plug#end() re-runs `filetype plugin indent on` and `syntax enable`,
 " so the duplicate lines elsewhere in this file are harmless.
