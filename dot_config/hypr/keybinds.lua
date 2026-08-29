@@ -14,6 +14,7 @@ hl.bind(mainMod .. " + ALT + P",        hl.dsp.window.pseudo()) -- dwindle
 -- hl.bind(mainMod .. " + S", hl.dsp.layout("togglesplit")) -- dwindle
 hl.bind(mainMod .. " + Space",          hl.dsp.exec_cmd("hyprctl switchxkblayout " .. m.kbSwitchDevice .. " next"))
 hl.bind(mainMod .. " + ALT + L",        hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + I",              hl.dsp.exec_cmd(m.systemInfo))
 
 -- Move focus with mainMod + hjkl
 hl.bind(mainMod .. " + H", hl.dsp.focus({ direction = "left" }))
