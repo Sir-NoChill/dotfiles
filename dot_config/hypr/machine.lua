@@ -9,7 +9,7 @@ return {
     terminal    = "/usr/bin/ghostty",
     editor      = "nvim",
     fileManager = "thunar",
-    menu        = "wofi --show drun",
+    menu        = "hyprlauncher",
 
     -- Keyboard
     kb_layout  = "us,ca",
