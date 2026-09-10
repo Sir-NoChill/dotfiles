@@ -5,3 +5,4 @@ justfile
 .direnv/
 compile_commands.json
 .cache/
+plans/
