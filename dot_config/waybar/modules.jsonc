@@ -49,7 +49,10 @@
             "transition-left-to-right": true,
             "reveal-delay": 250
         },
-        "modules": [ "backlight", "backlight/slider" ]
+        "modules": [
+          // "custom/brightness",
+          "custom-slider/brightness"
+        ]
     },
 
     /* ===============  LEFT  =============== */
@@ -134,20 +137,37 @@
         "orientation": "horizontal"
     },
 
-    "backlight": {
-        "device": "intel_backlight",
-        "format": "{icon}",
-        "format-icons": [ "󰃜", "󰃝", "󰃞", "󰃟", "󰃠" ],
-        "scroll-step": 2,
-        "tooltip-format": "Backlight  ·  {percent}%"
-    },
+    // "custom/brightness": {
+    //   "exec": "hyprctl hyprsunset gamma",
+    //   "format": "󰃠",
+    //   "format-icons": [ "󰃜", "󰃝", "󰃞", "󰃟", "󰃠" ],
+    //   "scroll-step": 2,
+    //   "tooltip-format": "Backlight  ·  {percent}%"
+    // },
 
-    "backlight/slider": {
-        "device": "intel_backlight",
-        "min": 5,
-        "max": 100,
+    "custom-slider/brightness": {
+        "exec": "hyprctl hyprsunset gamma",         // read: prints the current value
+        "on-change": "hyprctl hyprsunset gamma {}", // write: {} is the value
+        "interval": 5,
+        "signal": 8,                                // pkill -RTMIN+8 waybar to sync
+        "min": 10, "max": 100,
         "orientation": "horizontal"
     },
+
+    // "backlight": {
+    //     "device": "intel_backlight",
+    //     "format": "{icon}",
+    //     "format-icons": [ "󰃜", "󰃝", "󰃞", "󰃟", "󰃠" ],
+    //     "scroll-step": 2,
+    //     "tooltip-format": "Backlight  ·  {percent}%"
+    // },
+
+    // "backlight/slider": {
+    //     "device": "intel_backlight",
+    //     "min": 5,
+    //     "max": 100,
+    //     "orientation": "horizontal"
+    // },
 
     "network": {
         "interval": 5,
