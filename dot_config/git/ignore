@@ -6,3 +6,4 @@ justfile
 compile_commands.json
 .cache/
 plans/
+notes/
