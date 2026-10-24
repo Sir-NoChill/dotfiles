@@ -1,0 +1,6 @@
+#!/bin/sh
+# agent-tmux STATUS  — called by an agent hook from inside its tmux pane.
+# Writes STATUS onto this pane's window as the @agent user option. Best-effort:
+# a no-op (exit 0) when not under tmux, so a hook can never stall or fail a turn.
+[ -n "$TMUX_PANE" ] && tmux set -w -t "$TMUX_PANE" @agent "$1" 2>/dev/null
+exit 0
